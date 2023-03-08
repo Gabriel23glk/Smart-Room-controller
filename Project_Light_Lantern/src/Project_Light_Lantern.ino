@@ -14,14 +14,13 @@
 int PINA=A5;
 int PINB=A4;
 const int PIXELPIN=D5;
-const int PIXELNUMBER=16;
-int pixelBrightness=25;
-int maxPos=16;
+const int PIXELNUMBER=15;
+int pixelBrightness;
+// int maxPos=15;
 int startPixel=0;
-int endPixel=16;
+int endPixel=15;
 int color=0x008000;
 int positionA;
-int lastPosition;
 int pixelCount;
 const int OLED_RESET=4;
 
@@ -46,11 +45,10 @@ void setup() {
   display.begin(SSD1306_SWITCHCAPVCC, 0x3c);
   display.setTextSize(1);
   display.setTextColor(BLACK,WHITE);
-  display.printf("I am Batman%c",33);
+  display.printf("Light It Up%c",33);
   display.display();
 
   pinMode(Tswitch, INPUT);
-  pinMode(PIXELPIN,INPUT);
   pixel.begin();
   pixel.show();
 
@@ -63,8 +61,6 @@ void setup() {
   }
   Serial.printf("\n\n");
 
-  delay(4000);
-
 }
   // Put initialization like pinMode and begin functions here.
 
@@ -72,43 +68,41 @@ void setup() {
 
 // loop() runs over and over again, as quickly as it can execute.
 void loop() {
+ positionA=myEnc.read();
+ pixelBrightness=map(positionA,0,95,0,15);
+ pixel.setBrightness(pixelBrightness);
  pixelFill(startPixel,endPixel,color);
-  positionA=myEnc.read();
-
-  lastPosition=positionA;
-  Serial.printf("%i %i",positionA,lastPosition);
-  delay(1000);
-  positionA=myEnc.read();
-  if(positionA!=lastPosition)
-  myEnc.write(maxPos);
-  {
-     pixelBrightness=map(positionA,0,95,0,16);
-    Serial.printf("%i,%i\n",positionA,pixelBrightness);
-  }
-
+//  Serial.printf("%i %i",positionA,pixelBrightness);
+ myEnc.write(maxPos);  
+    // Serial.printf("%i,%i\n",positionA,pixelBrightness);
     val=analogRead(Tswitch);
-    BULB;
     brightness=255;
     Serial.printf("val=%i\n",val);
     if (val<200){
-     for (BULB=1; BULB<=4; BULB++){
+     for (BULB=1; BULB<=3; BULB++){
       setHue(BULB,false,HueGreen,0,255); 
      Serial.printf("bulb off");
+     for (BULB=4; BULB<=6; BULB++);{
+      setHue(BULB, false, HueBlue,0,255);
+     }
+     }
     }
-    }
+    
     else{
-      for (BULB=1; BULB<=4; BULB++){
+      for (BULB=1; BULB<=3; BULB++){
         setHue(BULB,true,HueGreen,brightness,255);
         Serial.printf("bulb on");
-        delay(100);
-      }
-    }
+        for (BULB=4; BULB<=6; BULB++);{
+          setHue(BULB, true, HueBlue,brightness,255);
+ }
+}
+}
 }
 void pixelFill(int startPixel,int endPixel,int color){
     for (pixelCount=startPixel; pixelCount<=endPixel; pixelCount++)
-      pixel.setPixelColor(pixelBrightness,color);
-      pixel.setBrightness(pixelBrightness);
+      pixel.setPixelColor(pixelCount,color);
       pixel.show();
-      Serial.printf("encoder value%i\r",positionA);
+      pixel.clear();
+      // Serial.printf("encoder value%i\r",positionA);
 
 }
