@@ -69,11 +69,7 @@ void setup() {
   Serial.printf("\n\n");
 
 }
-  // Put initialization like pinMode and begin functions here.
 
-
-
-// loop() runs over and over again, as quickly as it can execute.
 void loop() {
    buttonState=digitalRead(buttonPin);
  positionA=myEnc.read();
@@ -95,14 +91,11 @@ if(positionA<0){
     Serial.printf("%i,%i\n",positionA,pixelBrightness);
     val=analogRead(Tswitch);
     brightness=255;
-    // Serial.printf("val=%i\n",val);
     if (val<200){
      for (BULB=1; BULB<=3; BULB++){
       setHue(BULB,false,HueGreen,0,255);
       switchOFF(MYWEMO1);
-
      } 
-    //  Serial.printf("bulb off");
      for (BULB=4; BULB<=6; BULB++){
       setHue(BULB, false, HueBlue,0,255);
       switchOFF(MYWEMO2);
