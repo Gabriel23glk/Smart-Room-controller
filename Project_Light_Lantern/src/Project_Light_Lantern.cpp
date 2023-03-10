@@ -19,7 +19,7 @@
 #include "Light_Bulb.h"
 void setup();
 void loop();
-void pixelFill(int startPixel,int endPixel,int color);
+void pixelFill(int startPixel,int endPixel,int color1,int color2);
 #line 14 "c:/Users/gabea/Documents/IoT/Smart-Room-controller/Project_Light_Lantern/src/Project_Light_Lantern.ino"
 int PINA=D11;
 int PINB=D12;
@@ -29,8 +29,8 @@ int pixelBrightness;
 int maxPos=15;
 int startPixel=0;
 int endPixel=15;
-int color=0x008000;
-int positionB;
+int color1=green;
+int color2=blue;
 int positionA;
 int pixelCount;
 const int OLED_RESET=4;
@@ -87,48 +87,57 @@ void setup() {
 void loop() {
    buttonState=digitalRead(buttonPin);
  positionA=myEnc.read();
- pixelBrightness=map(positionA,0,95,0,127);
+if(positionA>95){
+  positionA=95;
+  myEnc.write(95);
+}
+if(positionA<0){
+  positionA=0;
+  myEnc.write(0);
+}
+
+ pixelBrightness=map(positionA,0,95,0,229);
  pixel.setBrightness(pixelBrightness);
- pixelFill(startPixel,endPixel,color);
+ pixelFill(startPixel,endPixel,color1,color2);
 // Serial.printf("val of my encoder/n");
  Serial.printf("%i %i\n",positionA,pixelBrightness);
- myEnc.write(maxPos);  
-    // Serial.printf("%i,%i\n",positionA,pixelBrightness);
+  
+    Serial.printf("%i,%i\n",positionA,pixelBrightness);
     val=analogRead(Tswitch);
     brightness=255;
     // Serial.printf("val=%i\n",val);
     if (val<200){
      for (BULB=1; BULB<=3; BULB++){
-      // setHue(BULB,false,HueGreen,0,255);
-      //switchOFF(MYWEMO1);
+      setHue(BULB,false,HueGreen,0,255);
+      switchOFF(MYWEMO1);
 
      } 
     //  Serial.printf("bulb off");
      for (BULB=4; BULB<=6; BULB++){
-      // setHue(BULB, false, HueBlue,0,255);
-      //switchOFF(MYWEMO2);
+      setHue(BULB, false, HueBlue,0,255);
+      switchOFF(MYWEMO2);
      }
     }
     
     else{
       for (BULB=1; BULB<=3; BULB++){
-        // setHue(BULB,true,HueGreen,brightness,255);
-        // Serial.printf("bulb on");
-        //switchON(MYWEMO1);
+        setHue(BULB,true,HueGreen,brightness,255);
+        Serial.printf("bulb on");
+        switchON(MYWEMO1);
       }
         for (BULB=4; BULB<=6; BULB++){
-          // setHue(BULB, true, HueBlue,brightness,255);
-          //switchON(MYWEMO2);
+          setHue(BULB, true, HueBlue,brightness,255);
+          switchON(MYWEMO2);
  
 }
 }
 }
-void pixelFill(int startPixel,int endPixel,int color){
-    for (pixelCount=startPixel; pixelCount<=endPixel; pixelCount++){
-      pixel.setPixelColor(pixelCount,color);
-      pixel.show();
-}
-      pixel.clear();
+void pixelFill(int startPixel,int endPixel,int color1,int color2){
+    for (pixelCount=startPixel; pixelCount<=endPixel; pixelCount=pixelCount+2){
+      pixel.setPixelColor(pixelCount,color1);
+      pixel.setPixelColor(pixelCount+1,color2);
+      pixel.show();  
+    }
 }
 
      
